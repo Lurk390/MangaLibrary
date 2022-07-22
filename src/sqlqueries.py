@@ -35,18 +35,18 @@ INITIALIZE_TABLES = '''
     ------------------------------------------------------------------------------------
 
     CREATE TABLE MangaInfo (
-    MangaID INT IDENTITY,
-    Title VARCHAR(100),
-    Author VARCHAR(30),
-    Publisher VARCHAR(30),
-    Status VARCHAR(10),
-    VolumeType VARCHAR(10),
-    Year INT,
-    Description VARCHAR(MAX),
-    NumberOfVolumes INT,
-    CoverImage VARCHAR(100),
-    URL VARCHAR(100),
-    PRIMARY KEY(MangaID)
+        MangaID INT IDENTITY,
+        Title VARCHAR(100),
+        Author VARCHAR(30),
+        Publisher VARCHAR(30),
+        Status VARCHAR(10),
+        VolumeType VARCHAR(10),
+        Year INT,
+        Description VARCHAR(MAX),
+        NumberOfVolumes INT,
+        CoverImage VARCHAR(100),
+        URL VARCHAR(100),
+        PRIMARY KEY(MangaID)
     );
 
     INSERT INTO MangaInfo (VolumeType, URL) VALUES('Single',
@@ -71,19 +71,19 @@ INITIALIZE_TABLES = '''
     ------------------------------------------------------------------------------------
 
     CREATE TABLE VolumeInfo (
-    VolumeID INT IDENTITY,
-    MangaID INT NOT NULL,
-    VolumeNumber INT NOT NULL,
-    PRIMARY KEY(VolumeID)
+        VolumeID INT IDENTITY,
+        MangaID INT NOT NULL,
+        VolumeNumber INT NOT NULL,
+        PRIMARY KEY(VolumeID)
     );
 
     ------------------------------------------------------------------------------------
 
     CREATE TABLE UserToVolume (
-    UserToVolumeID INT IDENTITY,
-    UserID INT NOT NULL,
-    VolumeID INT NOT NULL,
-    PRIMARY KEY(UserToVolumeID)
+        UserToVolumeID INT IDENTITY,
+        UserID INT NOT NULL,
+        VolumeID INT NOT NULL,
+        PRIMARY KEY(UserToVolumeID)
     );
 
     --Assassination Classroom
