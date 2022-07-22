@@ -1,23 +1,44 @@
-import requests
-from bs4 import BeautifulSoup
+"""
+This module contains the function get_manga_data(url).
+
+@author: Mahmoud Elbasiouny
+"""
+
 import re
+import requests
+
 from AnilistPython import Anilist
+from bs4 import BeautifulSoup
 
 
-def getData(url):
+def get_manga_data(url):
+    """Gets manga data from a Comic Vine URL and the Anilist API and returns data as a
+    dictionary
+
+    Args:
+        url (string): Must be a Comic Vine URL pointing to a specific manga series
+                      ex. https://comicvine.gamespot.com/berserk/4050-18867/
+
+    Returns:
+        Dictionary: Contains title, author, publisher, year, description, status, number
+                    of volumes, and cover image data for a specific manga series
+    """
+
     title = ""
-    year = 0
+    author = ""
     publisher = ""
-    number_of_volumes = 0
+    year = 0
     description = ""
     status = ""
-    author = ""
+    number_of_volumes = 0
+    cover_image = ""
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+    HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
     }
-    r = requests.get(url, headers=headers)
-    soup = BeautifulSoup(r.content, "html.parser")
+    req = requests.get(url, headers=HEADERS)
+    soup = BeautifulSoup(req.content, "html.parser")
 
     # Get title
     title = soup.find("a", class_="wiki-title").text
@@ -36,7 +57,7 @@ def getData(url):
 
     # Get number of volumes
     number_of_volumes = soup.find("span", class_="volume-issue-count").text
-    number_of_volumes = int(re.sub("\D", "", number_of_volumes))
+    number_of_volumes = (re.sub(r"\D", "", number_of_volumes))
 
     # Get author
     if title == "The Promised Neverland":
@@ -45,19 +66,19 @@ def getData(url):
         author = soup.find("span", class_="relation").text
 
     # Get cover image
-    cover_image = soup.find("meta", property="og:image")["content"]
+    cover_image = str(soup.find("meta", property="og:image")["content"])
 
-    # Anilist API ---------------------------------------------------------------------------------------------------------------------
+    # Anilist API ----------------------------------------------------------------------
     anilist = Anilist()
-    anilist_manga_info = anilist.get_manga(title)
+    anilist_manga_data = anilist.get_manga(title)
 
     # Get description
-    description = anilist_manga_info["desc"]
+    description = str(anilist_manga_data["desc"])
     description = description.split("<", 1)[0]
     description = description.replace("\n", " ")
 
     # Get status
-    status = anilist_manga_info["release_status"]
+    status = str(anilist_manga_data["release_status"])
 
     manga_data = {
         "title": title,
@@ -67,6 +88,6 @@ def getData(url):
         "description": description,
         "status": status,
         "number of volumes": number_of_volumes,
-        "cover image": cover_image
+        "cover image": cover_image,
     }
     return manga_data
