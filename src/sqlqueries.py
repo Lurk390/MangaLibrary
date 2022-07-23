@@ -6,7 +6,7 @@ database.
 """
 
 
-INITIALIZE_TABLES = '''
+INITIALIZE_TABLES = """
     IF (EXISTS (SELECT *
                 FROM INFORMATION_SCHEMA.TABLES
                 WHERE TABLE_NAME = 'Users'
@@ -158,8 +158,8 @@ INITIALIZE_TABLES = '''
     INSERT INTO UserToVolume (UserID, VolumeID) VALUES(1, 101);
     INSERT INTO UserToVolume (UserID, VolumeID) VALUES(1, 104);
     INSERT INTO UserToVolume (UserID, VolumeID) VALUES(1, 105);
-    '''
+    """
 
-MAX_MANGAID_ROW = '''
+MAX_MANGAID_ROW = """
     SELECT TOP 1 MangaID FROM MangaInfo ORDER BY MangaID DESC
-    '''
+    """
