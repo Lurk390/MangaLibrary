@@ -35,10 +35,10 @@ cursor.execute(INITIALIZE_TABLES)
 MangaID_length = cursor.execute(MAX_MANGAID_ROW).fetchone()[0]
 
 # Loops through all MangaInfo rows and gets URL from each row
-for i in range(1, MangaID_length + 1):
+for MangaID in range(1, MangaID_length + 1):
     url = cursor.execute(
         f"""
-        SELECT URL FROM MangaInfo WHERE MangaID = {i}
+        SELECT URL FROM MangaInfo WHERE MangaID = {MangaID}
         """
     ).fetchone()[0]
 
@@ -65,14 +65,26 @@ for i in range(1, MangaID_length + 1):
             manga_data["description"],
             manga_data["status"],
             manga_data["cover image"],
-            i,
+            MangaID,
         ),
     )
 
-# ======================================================================================
-# Create a for loop that inserts MangaID and VolumeNumber into the VolumeInfo table for
-# each series in the MangaInfo table.
-# ======================================================================================
+# Creates a row for each volume from MangaInfo table in VolumeInfo table
+for MangaID in range(1, MangaID_length + 1):
+    number_of_volumes = cursor.execute(
+        f"""
+        SELECT NumberOfVolumes FROM MangaInfo WHERE MangaID = {MangaID}
+        """
+    ).fetchone()[0]
+
+    # Inserts MangaID and VolumeNumber into VolumeInfo table for each manga series
+    for VolumeNumber in range(1, number_of_volumes + 1):
+        cursor.execute(
+            f"""
+            INSERT INTO VolumeInfo (MangaID, VolumeNumber) VALUES({MangaID},
+                                                                  {VolumeNumber})
+            """
+        )
 
 # Print MangaInfo table
 print_table("MangaInfo")
