@@ -6,7 +6,8 @@ database. It also contains the function print_table() to print the contents of a
 """
 
 from dbconnection import connect
-from sqlqueries import INITIALIZE_TABLES, MAX_MANGAID_ROW
+
+import sqlqueries
 from webscraper import get_manga_data
 
 
@@ -29,10 +30,10 @@ cnxn = connect()
 cursor = cnxn.cursor()
 
 # Creates tables if they don't exist
-cursor.execute(INITIALIZE_TABLES)
+cursor.execute(sqlqueries.INITIALIZE_TABLES)
 
 # Finds last row in MangaInfo table and gets its MangaID
-MangaID_length = cursor.execute(MAX_MANGAID_ROW).fetchone()[0]
+MangaID_length = cursor.execute(sqlqueries.MAX_MANGAID_ROW).fetchone()[0]
 
 # Loops through all MangaInfo rows and gets URL from each row
 for MangaID in range(1, MangaID_length + 1):
