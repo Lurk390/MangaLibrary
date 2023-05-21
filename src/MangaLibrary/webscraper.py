@@ -5,8 +5,8 @@ This module contains the function get_manga_data(url).
 """
 
 import re
-import requests
 
+import requests
 from AnilistPython import Anilist
 from bs4 import BeautifulSoup
 
@@ -35,7 +35,7 @@ def get_manga_data(url):
 
     HEADERS = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                      "(KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+        "(KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
     }
     req = requests.get(url, headers=HEADERS)
     soup = BeautifulSoup(req.content, "html.parser")
@@ -57,7 +57,7 @@ def get_manga_data(url):
 
     # Get number of volumes
     number_of_volumes = soup.find("span", class_="volume-issue-count").text
-    number_of_volumes = (re.sub(r"\D", "", number_of_volumes))
+    number_of_volumes = re.sub(r"\D", "", number_of_volumes)
 
     # Get author
     if title == "The Promised Neverland":
