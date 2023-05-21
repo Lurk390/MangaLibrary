@@ -1,2 +1,5 @@
 /src/dbconnection.py
 __pycache__/
+/dist/*
+/.venv/*
+/data/*
