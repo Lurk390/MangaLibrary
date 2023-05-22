@@ -8,19 +8,20 @@ database. It also contains the function print_table() to print the contents of a
 import os
 import sqlite3
 
-import MangaLibrary.sqlqueries as sqlqueries
-from MangaLibrary.webscraper import get_manga_data
+from src.MangaLibrary.sqlqueries import INITIALIZE_TABLES, MAX_MANGAID_ROW
+from src.MangaLibrary.webscraper import get_manga_data
 
 
 def print_table(cursor, table_name):
     """Prints the contents of a table. Must also be connected to the database.
 
     Args:
+        cursor (sqlite3.Cursor): Must be connected to the database
         table_name (string): Must be a table name that exists in the database
     """
 
     print(f"{table_name}:")
-    cursor.execute(f"""SELECT * FROM {table_name}""")
+    cursor.execute(f"SELECT * FROM {table_name}")
     for row in cursor.fetchall():
         print(row)
     print("\n")
@@ -34,17 +35,15 @@ def main():
     cursor = connection.cursor()
 
     # Creates tables if they don't exist
-    cursor.executescript(sqlqueries.INITIALIZE_TABLES)
+    cursor.executescript(INITIALIZE_TABLES)
 
     # Finds last row in MangaInfo table and gets its MangaID
-    MangaID_length = cursor.execute(sqlqueries.MAX_MANGAID_ROW).fetchone()[0]
+    mangaid_length = cursor.execute(MAX_MANGAID_ROW).fetchone()[0]
 
     # Loops through all MangaInfo rows and gets URL from each row
-    for MangaID in range(1, MangaID_length + 1):
+    for MangaID in range(1, mangaid_length + 1):
         url = cursor.execute(
-            f"""
-            SELECT URL FROM MangaInfo WHERE MangaID = {MangaID}
-            """
+            f"SELECT URL FROM MangaInfo WHERE MangaID = {MangaID}"
         ).fetchone()[0]
 
         # Inserts data from get_manga_data(url) into MangaInfo table
@@ -75,11 +74,9 @@ def main():
         )
 
     # Creates a row for each volume from MangaInfo table in VolumeInfo table
-    for MangaID in range(1, MangaID_length + 1):
+    for MangaID in range(1, mangaid_length + 1):
         number_of_volumes = cursor.execute(
-            f"""
-            SELECT NumberOfVolumes FROM MangaInfo WHERE MangaID = {MangaID}
-            """
+            f"SELECT NumberOfVolumes FROM MangaInfo WHERE MangaID = {MangaID}"
         ).fetchone()[0]
 
         # Inserts MangaID and VolumeNumber into VolumeInfo table for each manga series
@@ -87,7 +84,7 @@ def main():
             cursor.execute(
                 f"""
                 INSERT INTO VolumeInfo (MangaID, VolumeNumber) VALUES({MangaID},
-                                                                    {VolumeNumber})
+                                                                      {VolumeNumber})
                 """
             )
 
