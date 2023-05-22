@@ -5,6 +5,7 @@ database. It also contains the function print_table() to print the contents of a
 @author: Mahmoud Elbasiouny
 """
 
+import os
 import sqlite3
 
 import MangaLibrary.sqlqueries as sqlqueries
@@ -26,7 +27,9 @@ def print_table(cursor, table_name):
 
 
 def main():
-    # Connect to database
+    # Check if data folder exists and connect to database
+    if not os.path.exists("data"):
+        os.makedirs("data")
     connection = sqlite3.connect("data/library.db")
     cursor = connection.cursor()
 
