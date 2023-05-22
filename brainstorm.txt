@@ -1,0 +1,32 @@
+multple users - accounts
+
+each user has a library that contains manga series
+
+each series contains all the vols
+
+vols are color if owned and greyed out if not
+
+be able to click on unowned manga and add it
+
+managa info pulled from anilist + comicvine
+
+
+
+library (list) -> series (list) -> vols 	-> info
+	|			|		|		|
+	v			v		v		v
+mID (1,2,3)	(berserk, vinland) (vol 1,2,3)    (title, author)
+
+
+
+HOW TO ADD MANGA
+
+0. build a website
+1. click on button that prompts a search window
+2. search window uses anilist api to find manga series
+3. comicvine api used to pull manga info
+4. now series is shown in library
+5. if you click on the series, a list of all the current vols are shown
+6. vols are either colored (owned) or greyed out (unowned)
+7. owned vols contain info while unowned are just placeholder images
+
