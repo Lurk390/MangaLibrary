@@ -1,170 +1,229 @@
+"""This file contains functions to get manga data from AniList and Comic Vine. The main
+function is get_manga_data(manga_name) and the remaining functions are helper functions
+to obtain and parse the data.
 """
-This module contains the function get_manga_data(url) and its dependant functions.
-
-@author: Mahmoud Elbasiouny
-"""
-
+import os
 import re
 
 import requests
 from AnilistPython import Anilist
-from bs4 import BeautifulSoup
+from fuzzywuzzy import fuzz, process
 
 
-def cv_get_title(soup):
-    """Gets the title of a manga series from a Comic Vine URL
-
-    Args:
-        soup (BeautifulSoup): BeautifulSoup object of a Comic Vine URL
-
-    Returns:
-        string: Title of a manga series
-    """
-
-    title = soup.find("a", class_="wiki-title").text
-    if title == "Berserk Deluxe Edition":
-        return "Berserk"
-    else:
-        return soup.find("a", class_="wiki-title").text
-
-
-def cv_get_year(soup):
-    """Gets the year of a manga series from a Comic Vine URL
+def al_get_author(manga_name: str) -> str:
+    """Gets the author of a manga series using a AniList API v2 GraphQL query
 
     Args:
-        soup (BeautifulSoup): BeautifulSoup object of a Comic Vine URL
+        manga_name (str): Name of a manga series
 
     Returns:
-        int: Year of a manga series
+        str: Author of a manga series
     """
 
-    year = soup.find("table", class_="table").find_all("td")[1].find("div").text
-    return int("".join(year.split()))
+    URL = "https://graphql.anilist.co"
 
-
-def cv_get_publisher(soup):
-    """Gets the publisher of a manga series from a Comic Vine URL
-
-    Args:
-        soup (BeautifulSoup): BeautifulSoup object of a Comic Vine URL
-
-    Returns:
-        string: Publisher of a manga series
+    query = """
+        query ($search: String) {
+            Media(search: $search, type: MANGA) {
+                staff {
+                    edges {
+                        role
+                        node {
+                            name {
+                                full
+                            }
+                        }
+                    }
+                }
+            }
+        }
     """
 
-    publisher = soup.find("table", class_="table").find_all("td")[2].find("div").text
-    return " ".join(publisher.split())
-
-
-def cv_get_number_of_volumes(soup):
-    """Gets the number of volumes of a manga series from a Comic Vine URL
-
-    Args:
-        soup (BeautifulSoup): BeautifulSoup object of a Comic Vine URL
-
-    Returns:
-        int: Number of volumes of a manga series
-    """
-
-    number_of_volumes = soup.find("span", class_="volume-issue-count").text
-    return int(re.sub(r"\D", "", number_of_volumes))
-
-
-def cv_get_author(soup):
-    """Gets the author of a manga series from a Comic Vine URL
-
-    Args:
-        soup (BeautifulSoup): BeautifulSoup object of a Comic Vine URL
-
-    Returns:
-        string: Author of a manga series
-    """
-
-    return soup.find("span", class_="relation").text
-
-
-def cv_get_cover_image(soup):
-    """Gets the cover image of a manga series from a Comic Vine URL
-
-    Args:
-        soup (BeautifulSoup): BeautifulSoup object of a Comic Vine URL
-
-    Returns:
-        string: Cover image of a manga series
-    """
-
-    return str(soup.find("meta", property="og:image")["content"])
-
-
-def al_get_description(al_manga_data):
-    """Gets the description of a manga series from the Anilist API
-
-    Args:
-        al_manga_data (Dictionary): Dictionary containing data of a manga series
-
-    Returns:
-        string: Description of a manga series
-    """
-
-    description = str(al_manga_data["desc"])
-    return description.split("<", 1)[0].replace("\n", " ")
-
-
-def al_get_status(al_manga_data):
-    """Gets the status of a manga series from the Anilist API
-
-    Args:
-        al_manga_data (Dictionary): Dictionary containing data of a manga series
-
-    Returns:
-        string: Status of a manga series
-    """
-
-    return str(al_manga_data["release_status"])
-
-
-def get_manga_data(url):
-    """Gets manga data from a Comic Vine URL and the Anilist API and returns data as a
-    dictionary
-
-    Args:
-        url (string): Must be a Comic Vine URL pointing to a specific manga series
-                      ex. https://comicvine.gamespot.com/berserk/4050-18867/
-
-    Returns:
-        Dictionary: Contains title, author, publisher, year, description, status, number
-                    of volumes, and cover image data for a specific manga series
-    """
-
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+    HEADERS = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
     }
-    req = requests.get(url, headers=headers)
-    soup = BeautifulSoup(req.content, "html.parser")
 
-    title = cv_get_title(soup)
-    year = cv_get_year(soup)
-    publisher = cv_get_publisher(soup)
-    number_of_volumes = cv_get_number_of_volumes(soup)
-    author = cv_get_author(soup)
-    cover_image = cv_get_cover_image(soup)
+    variables = {"search": manga_name}
 
-    # Anilist API ----------------------------------------------------------------------
+    response = requests.post(
+        URL, json={"query": query, "variables": variables}, headers=HEADERS
+    )
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        data = response.json()
+        staff = data["data"]["Media"]["staff"]["edges"]
+
+        if staff:
+            return staff[0]["node"]["name"]["full"]
+        else:
+            print("No staff members found for this manga.")
+    else:
+        print("Error occurred while fetching data:", response.text)
+
+
+def parse_publisher(description: str) -> str:
+    """Parses the publisher from the description of a manga series
+    Args:
+        description (str): Description of a manga series
+
+    Returns:
+        str: Publisher of a manga series
+    """
+
+    # Regex pattern to match the publisher
+    match = re.search(r"\(Source:\s*(.*?)\)", description)
+    if match:
+        publisher = match.group(1)
+        return publisher
+    else:
+        print("No publisher found.")
+
+
+def clean_description(description: str) -> str:
+    """Cleans the description of a manga series by removing everything after the first
+    newline.
+
+    Args:
+        description (str): Description of a manga series
+
+    Returns:
+        str: Cleaned description of a manga series
+    """
+
+    # TODO: Clean up HTML entities. Example in SPYxFAMILY: "&lt;Twilight&gt;"
+
+    return description.split("\n", 1)[0]
+
+
+def get_al_data(manga_name: str, dictionary: dict) -> dict:
+    """Gets manga data from AniList, parses it, and stores in the dictionary.
+
+    Args:
+        manga_name (str): Name of a manga series
+        dictionary (dict): Dictionary to store the manga data
+
+    Returns:
+        dict: Dictionary containing the manga data
+    """
+
+    # Handle special cases ("Berserk Deluxe Edition")
+    if fuzz.partial_ratio(manga_name, "Berserk") > 85:
+        manga_name = "Berserk"
+
+    # Connect to AniList and get the manga data
     anilist = Anilist()
-    al_manga_data = anilist.get_manga(title)
+    manga_data = anilist.get_manga(manga_name)
 
-    description = al_get_description(al_manga_data)
-    status = al_get_status(al_manga_data)
+    # Parse the data to dictionary
+    dictionary["author"] = al_get_author(manga_name)
+    dictionary["description"] = clean_description(manga_data["desc"])
+    dictionary["publisher"] = parse_publisher(manga_data["desc"])
+    dictionary["status"] = manga_data["release_status"]
+    return dictionary
+
+
+def get_cv_data(manga_name: str, dictionary: dict) -> dict:
+    """Gets manga data from Comic Vine and parses it. Uses the publisher from AniList
+    (which is English) to get the best match from Comic Vine.
+
+    Args:
+        manga_name (str): Name of a manga series
+        dictionary (dict): Dictionary to store the manga data
+
+    Returns:
+        dict: Dictionary containing the manga data
+    """
+
+    # TODO: Get the volume type (e.g. Single, Two-in-One, etc.)
+
+    API_KEY = os.getenv("CV_API_KEY")
+    search_url = (
+        f"https://comicvine.gamespot.com/api/search/?api_key={API_KEY}"
+        f"&format=json&query={manga_name}&resources=volume"
+    )
+    HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        "(KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    }
+    response = requests.get(search_url, headers=HEADERS)
+
+    if response.status_code == 200:
+        results = response.json()["results"]
+        al_publisher = dictionary["publisher"]
+        output_results = []
+        count = 0
+
+        # Get the first 3 results
+        for result in results:
+            output_results.append(result)
+            count += 1
+
+            if count == 3:
+                break
+
+        # Get the result with "comics" in the name (to match english publisher)
+        for result in output_results:
+
+            if "comics" in result["publisher"]["name"].lower():
+                dictionary["title"] = result["name"]
+                dictionary["year"] = result["start_year"]
+                dictionary["number of volumes"] = result["count_of_issues"]
+                dictionary["cover image"] = result["image"]["original_url"]
+                dictionary["url"] = result["site_detail_url"]
+                break
+
+        # If no results, get the best match
+        if not dictionary["cover image"]:
+            best_match = None
+            best_score = 0
+
+            for result in output_results:
+                score = process.extractOne(
+                    result["publisher"]["name"],
+                    [al_publisher],
+                    scorer=fuzz.token_set_ratio,
+                )[1]
+
+                if score > best_score:
+                    best_match = result
+                    best_score = score
+
+            # If best match was found, add data
+            if best_match:
+                dictionary["title"] = best_match["name"]
+                dictionary["year"] = best_match["start_year"]
+                dictionary["number of volumes"] = best_match["count_of_issues"]
+                dictionary["cover image"] = best_match["image"]["original_url"]
+                dictionary["url"] = best_match["site_detail_url"]
+        return dictionary
+    else:
+        print(f"Error: {response.status_code}")
+
+
+def get_manga_data(manga_name: str) -> dict:
+    """Culminating function that gets manga data from AniList and Comic Vine
+
+    Args:
+        manga_name (str): Name of a manga series
+
+    Returns:
+        dict: Dictionary containing the manga data
+    """
 
     manga_data = {
-        "title": title,
-        "author": author,
-        "publisher": publisher,
-        "year": year,
-        "description": description,
-        "status": status,
-        "number of volumes": number_of_volumes,
-        "cover image": cover_image,
+        "title": "",
+        "author": "",
+        "publisher": "",
+        "year": 0,
+        "description": "",
+        "status": "",
+        "number of volumes": 0,
+        "cover image": "",
+        "url": "",
     }
+
+    get_al_data(manga_name, manga_data)
+    get_cv_data(manga_name, manga_data)
     return manga_data
