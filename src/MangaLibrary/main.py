@@ -1,33 +1,32 @@
+"""This module executes SQL queries to input data retrieved from get_manga_data() into
+the database. It also contains the function print_table() to print the contents of a
+table.
 """
-This module executes SQL queries to input data retrieved from get_manga_data() into the
-database. It also contains the function print_table() to print the contents of a table.
-
-@author: Mahmoud Elbasiouny
-"""
-
 import os
 import sqlite3
+from dotenv import load_dotenv
 
-from src.MangaLibrary.sqlqueries import INITIALIZE_TABLES, MAX_MANGAID_ROW
+from src.MangaLibrary.sqlqueries import INITIALIZE_TABLES
 from src.MangaLibrary.webscraper import get_manga_data
 
 
-def print_table(cursor, table_name):
-    """Prints the contents of a table. Must also be connected to the database.
-
-    Args:
-        cursor (sqlite3.Cursor): Must be connected to the database
-        table_name (string): Must be a table name that exists in the database
-    """
-
-    print(f"{table_name}:")
-    cursor.execute(f"SELECT * FROM {table_name}")
-    for row in cursor.fetchall():
-        print(row)
-    print("\n")
-
-
 def main():
+    # Load environment variables
+    load_dotenv()
+
+    # List of manga to test the program
+    test_harness = [
+        "Assassination Classroom",
+        "Berserk Deluxe Edition",
+        "Berserk",
+        "Chainsaw Man",
+        "Dorohedoro",
+        "Spy x Family",
+        "The Promised Neverland",
+        "Uzumaki",
+        "Vinland Saga",
+    ]
+
     # Check if data folder exists and connect to database
     if not os.path.exists("data"):
         os.makedirs("data")
@@ -37,28 +36,14 @@ def main():
     # Creates tables if they don't exist
     cursor.executescript(INITIALIZE_TABLES)
 
-    # Finds last row in MangaInfo table and gets its MangaID
-    mangaid_length = cursor.execute(MAX_MANGAID_ROW).fetchone()[0]
-
-    # Loops through all MangaInfo rows and gets URL from each row
-    for MangaID in range(1, mangaid_length + 1):
-        url = cursor.execute(
-            f"SELECT URL FROM MangaInfo WHERE MangaID = {MangaID}"
-        ).fetchone()[0]
-
-        # Inserts data from get_manga_data(url) into MangaInfo table
-        manga_data = get_manga_data(url)
+    # Loops through test_harness and inserts data from get_manga_data into MangaInfo
+    for manga in test_harness:
+        manga_data = get_manga_data(manga)
         cursor.execute(
             """
-            UPDATE MangaInfo SET Title = ?,
-            Author = ?,
-            Year = ?,
-            Publisher = ?,
-            NumberOfVolumes = ?,
-            Description = ?,
-            Status = ?,
-            CoverImage = ?
-            WHERE MangaID = ?
+            INSERT INTO MangaInfo (Title, Author, Year, Publisher, NumberOfVolumes,
+                                   Description, Status, CoverImage, URL)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 manga_data["title"],
@@ -69,28 +54,9 @@ def main():
                 manga_data["description"],
                 manga_data["status"],
                 manga_data["cover image"],
-                MangaID,
+                manga_data["url"],
             ),
         )
-
-    # Creates a row for each volume from MangaInfo table in VolumeInfo table
-    for MangaID in range(1, mangaid_length + 1):
-        number_of_volumes = cursor.execute(
-            f"SELECT NumberOfVolumes FROM MangaInfo WHERE MangaID = {MangaID}"
-        ).fetchone()[0]
-
-        # Inserts MangaID and VolumeNumber into VolumeInfo table for each manga series
-        for VolumeNumber in range(1, number_of_volumes + 1):
-            cursor.execute(
-                f"""
-                INSERT INTO VolumeInfo (MangaID, VolumeNumber) VALUES({MangaID},
-                                                                      {VolumeNumber})
-                """
-            )
-
-    # Print MangaInfo table
-    print_table(cursor, "MangaInfo")
-    print_table(cursor, "VolumeInfo")
 
     # Commit changes and close connection
     connection.commit()
