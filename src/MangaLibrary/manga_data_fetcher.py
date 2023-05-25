@@ -136,8 +136,6 @@ def get_cv_data(manga_name: str, dictionary: dict) -> dict:
         dict: Dictionary containing the manga data
     """
 
-    # TODO: Get the volume type (e.g. Single, Two-in-One, etc.)
-
     API_KEY = os.getenv("CV_API_KEY")
     search_url = (
         f"https://comicvine.gamespot.com/api/search/?api_key={API_KEY}"
