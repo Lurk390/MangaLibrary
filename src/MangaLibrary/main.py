@@ -6,7 +6,7 @@ import os
 import sqlite3
 from dotenv import load_dotenv
 
-from src.MangaLibrary.sqlqueries import INITIALIZE_TABLES
+from src.MangaLibrary.database_setup import INITIALIZE_TABLES
 from src.MangaLibrary.manga_data_fetcher import get_manga_data
 
 
@@ -15,7 +15,7 @@ def main():
     load_dotenv()
 
     # List of manga to test the program
-    test_harness = [
+    TEST_HARNESS = [
         "Assassination Classroom",
         "Berserk Deluxe Edition",
         "Berserk",
@@ -36,8 +36,8 @@ def main():
     # Creates tables if they don't exist
     cursor.executescript(INITIALIZE_TABLES)
 
-    # Loops through test_harness and inserts data from get_manga_data into MangaInfo
-    for manga in test_harness:
+    # Loops through TEST_HARNESS and inserts data from get_manga_data into MangaInfo
+    for manga in TEST_HARNESS:
         manga_data = get_manga_data(manga)
         cursor.execute(
             """

@@ -1,4 +1,4 @@
-"""This module stores all the SQL queries."""
+"""This module stores the SQL queries to set up the database."""
 
 
 INITIALIZE_TABLES = """
