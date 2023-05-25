@@ -1,8 +1,4 @@
-"""
-This module stores all the SQL queries.
-
-@author: Mahmoud Elbasiouny
-"""
+"""This module stores all the SQL queries."""
 
 
 INITIALIZE_TABLES = """
