@@ -7,7 +7,7 @@ import sqlite3
 from dotenv import load_dotenv
 
 from src.MangaLibrary.sqlqueries import INITIALIZE_TABLES
-from src.MangaLibrary.webscraper import get_manga_data
+from src.MangaLibrary.manga_data_fetcher import get_manga_data
 
 
 def main():
