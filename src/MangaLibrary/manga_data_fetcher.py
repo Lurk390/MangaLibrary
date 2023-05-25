@@ -2,6 +2,7 @@
 function is get_manga_data(manga_name) and the remaining functions are helper functions
 to obtain and parse the data.
 """
+import html
 import os
 import re
 
@@ -82,8 +83,8 @@ def parse_publisher(description: str) -> str:
 
 
 def clean_description(description: str) -> str:
-    """Cleans the description of a manga series by removing everything after the first
-    newline.
+    """Cleans the description of a manga series by removing HTML elements and everything
+    after the first newline.
 
     Args:
         description (str): Description of a manga series
@@ -92,8 +93,7 @@ def clean_description(description: str) -> str:
         str: Cleaned description of a manga series
     """
 
-    # TODO: Clean up HTML entities. Example in SPYxFAMILY: "&lt;Twilight&gt;"
-
+    description = html.unescape(description)
     return description.split("\n", 1)[0]
 
 
