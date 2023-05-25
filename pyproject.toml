@@ -13,9 +13,10 @@ packages = [{include = "MangaLibrary", from = "src"}]
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0.0"
 AnilistPython = "==0.1.3"
-beautifulsoup4 = "==4.12.2"
 requests = "==2.31.0"
 python-dotenv = "==1.0.0"
+fuzzywuzzy = "==0.18.0"
+python-levenshtein = "^0.21.0"
 
 [tool.poetry.scripts]
 MangaLibrary = "src.MangaLibrary.main:main"
