@@ -54,12 +54,8 @@ def al_get_author(manga_name: str) -> str:
     # Check if the request was successful
     if response.status_code == 200:
         data = response.json()
-        staff = data["data"]["Media"]["staff"]["edges"]
+        return data["data"]["Media"]["staff"]["edges"][0]["node"]["name"]["full"]
 
-        if staff:
-            return staff[0]["node"]["name"]["full"]
-        else:
-            print("No staff members found for this manga.")
     else:
         print("Error occurred while fetching data:", response.text)
 
@@ -75,11 +71,13 @@ def parse_publisher(description: str) -> str:
 
     # Regex pattern to match the publisher
     match = re.search(r"\(Source:\s*(.*?)\)", description)
+
     if match:
         publisher = match.group(1)
         return publisher
     else:
         print("No publisher found.")
+        return ""
 
 
 def clean_description(description: str) -> str:
@@ -93,7 +91,12 @@ def clean_description(description: str) -> str:
         str: Cleaned description of a manga series
     """
 
+    # Remove HTML tags
+    description = re.sub(r"<.*?>", "", description)
+
+    # Remove HTML entities
     description = html.unescape(description)
+
     return description.split("\n", 1)[0]
 
 
@@ -163,7 +166,6 @@ def get_cv_data(manga_name: str, dictionary: dict) -> dict:
 
         # Get the result with "comics" in the name (to match english publisher)
         for result in output_results:
-
             if "comics" in result["publisher"]["name"].lower():
                 dictionary["title"] = result["name"]
                 dictionary["year"] = result["start_year"]
