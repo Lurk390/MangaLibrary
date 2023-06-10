@@ -4,16 +4,12 @@ table.
 """
 import os
 import sqlite3
-from dotenv import load_dotenv
 
 from src.MangaLibrary.database_setup import INITIALIZE_TABLES
-from src.MangaLibrary.manga_data_fetcher import get_manga_data
+from src.MangaLibrary.manga_series import MangaSeries
 
 
 def main():
-    # Load environment variables
-    load_dotenv()
-
     # List of manga to test the program
     TEST_HARNESS = [
         "Assassination Classroom",
@@ -38,7 +34,7 @@ def main():
 
     # Loops through TEST_HARNESS and inserts data from get_manga_data into MangaInfo
     for manga in TEST_HARNESS:
-        manga_data = get_manga_data(manga)
+        manga_data = MangaSeries(manga)
         cursor.execute(
             """
             INSERT INTO MangaInfo (Title, Author, Year, Publisher, NumberOfVolumes,
@@ -46,17 +42,17 @@ def main():
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
-                manga_data["title"],
-                manga_data["author"],
-                manga_data["year"],
-                manga_data["publisher"],
-                manga_data["number of volumes"],
-                manga_data["description"],
-                manga_data["status"],
-                manga_data["cover image"],
-                manga_data["url"],
+               manga_data.title,
+               manga_data.author,
+               manga_data.year,
+               manga_data.publisher,
+               manga_data.number_of_volumes,
+               manga_data.description,
+               manga_data.status,
+               manga_data.cover_image,
+               manga_data.url,
             ),
-        )
+            )
 
     # Commit changes and close connection
     connection.commit()
