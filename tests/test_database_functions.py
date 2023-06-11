@@ -1,6 +1,3 @@
-import os
-import shutil
-
 from MangaLibrary.database_functions import DatabaseFunctions
 from MangaLibrary.manga_series import MangaSeries
 
