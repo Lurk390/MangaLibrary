@@ -42,3 +42,4 @@ def test_add_manga():
          9,
          "https://comicvine.gamespot.com/a/uploads/original/6/67663/6818216-01.jpg",
          "https://comicvine.gamespot.com/berserk-deluxe-edition/4050-117309/")]
+    db.connection.close()
