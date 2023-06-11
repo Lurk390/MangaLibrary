@@ -1,4 +1,3 @@
-"""This module tests the functions in manga_series.py."""
 import pytest
 from dotenv import load_dotenv
 
