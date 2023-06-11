@@ -19,14 +19,12 @@ def test_get_al_data(manga_series):
     assert manga_series.author == "Kentarou Miura"
     assert (
         manga_series.description == "His name is Guts, the Black Swordsman, a feared warrior spoken of only in "
-        "whispers. Bearer of a gigantic sword, an iron hand, and the scars of "
-        "countless battles and tortures, his flesh is also indelibly marked with The "
-        "Brand, an unholy symbol that draws the forces of darkness to him and dooms "
-        "him as their sacrifice. But Guts won't take his fate lying down; he'll cut a "
-        "crimson swath of carnage through the ranks of the damned—and anyone else "
-        "foolish enough to oppose him! Accompanied by Puck the Elf, more an annoyance "
-        "than a companion, Guts relentlessly follows a dark, bloodstained path that "
-        "leads only to death...or vengeance."
+        "whispers. Bearer of a gigantic sword, an iron hand, and the scars of countless battles and tortures, his "
+        "flesh is also indelibly marked with The Brand, an unholy symbol that draws the forces of darkness to him and "
+        "dooms him as their sacrifice. But Guts won't take his fate lying down; he'll cut a crimson swath of carnage "
+        "through the ranks of the damned—and anyone else foolish enough to oppose him! Accompanied by Puck the Elf, "
+        "more an annoyance than a companion, Guts relentlessly follows a dark, bloodstained path that leads only to "
+        "death...or vengeance."
     )
     assert manga_series.publisher == "Dark Horse"
     assert manga_series.status == "RELEASING"
@@ -63,10 +61,9 @@ def test_parse_publisher(manga_series):
 
 def test_clean_description(manga_series):
     target_description = (
-        "The master spy codenamed <Twilight> has spent his days on undercover missions,"
-        " all for the dream of a better world. But one day, he receives a particularly "
-        "difficult new order from command. For his mission, he must form a temporary fa"
-        "mily and start a new life?! A Spy/Action/Comedy about a one-of-a-kind family!"
+        "The master spy codenamed <Twilight> has spent his days on undercover missions, all for the dream of a better "
+        "world. But one day, he receives a particularly difficult new order from command. For his mission, he must "
+        "form a temporary family and start a new life?! A Spy/Action/Comedy about a one-of-a-kind family!"
     )
 
     raw_description = anilist.get_manga("Spy Family")["desc"]

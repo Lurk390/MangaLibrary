@@ -72,8 +72,8 @@ class DatabaseFunctions:
 
         self.cursor.execute(
             """
-            INSERT INTO MangaInfo (Title, Author, Year, Publisher, NumberOfVolumes,
-                                   Description, Status, CoverImage, URL)
+            INSERT INTO MangaInfo (Title, Author, Year, Publisher, NumberOfVolumes, Description, Status, CoverImage, 
+                                   URL)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
