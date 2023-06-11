@@ -16,9 +16,6 @@ class DatabaseFunctions:
 
         self.init_tables()
 
-    def __del__(self):
-        self.connection.close()
-
     def init_tables(self) -> None:
         """Creates all tables if they don't exist"""
 

@@ -20,3 +20,5 @@ def main():
     for manga in TEST_HARNESS:
         manga_data = MangaSeries(manga)
         db.add_manga(manga_data)
+
+    db.connection.close()
