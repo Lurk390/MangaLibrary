@@ -10,8 +10,12 @@ Uses the Comic Vine and Anilist APIs to retrieve manga info.
 CV_API_KEY=<api key>
 ```
 
-## Run with Poetry
-
+## Installing Poetry and Requirements
 1. `pip install poetry`
 2. `poetry install`
-3. `poetry run MangaLibrary`
+
+## Running the Program
+`poetry run MangaLibrary`
+
+## Testing with pytest
+`poetry run pytest --cov` (add `--cov-report=html:coverage_re` flag if you want an HTML report)
