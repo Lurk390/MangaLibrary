@@ -17,15 +17,17 @@ def manga_series():
 
 def test_get_al_data(manga_series):
     assert manga_series.author == "Kentarou Miura"
-    assert manga_series.description == "His name is Guts, the Black Swordsman, a feared warrior spoken of only in " \
-                                       "whispers. Bearer of a gigantic sword, an iron hand, and the scars of " \
-                                       "countless battles and tortures, his flesh is also indelibly marked with The " \
-                                       "Brand, an unholy symbol that draws the forces of darkness to him and dooms " \
-                                       "him as their sacrifice. But Guts won't take his fate lying down; he'll cut a " \
-                                       "crimson swath of carnage through the ranks of the damned—and anyone else " \
-                                       "foolish enough to oppose him! Accompanied by Puck the Elf, more an annoyance " \
-                                       "than a companion, Guts relentlessly follows a dark, bloodstained path that " \
-                                       "leads only to death...or vengeance."
+    assert (
+        manga_series.description == "His name is Guts, the Black Swordsman, a feared warrior spoken of only in "
+        "whispers. Bearer of a gigantic sword, an iron hand, and the scars of "
+        "countless battles and tortures, his flesh is also indelibly marked with The "
+        "Brand, an unholy symbol that draws the forces of darkness to him and dooms "
+        "him as their sacrifice. But Guts won't take his fate lying down; he'll cut a "
+        "crimson swath of carnage through the ranks of the damned—and anyone else "
+        "foolish enough to oppose him! Accompanied by Puck the Elf, more an annoyance "
+        "than a companion, Guts relentlessly follows a dark, bloodstained path that "
+        "leads only to death...or vengeance."
+    )
     assert manga_series.publisher == "Dark Horse"
     assert manga_series.status == "RELEASING"
 
@@ -43,8 +45,8 @@ def test_get_cv_data(manga_series):
     assert manga_series.title == "Assassination Classroom"
     assert manga_series.year == 2014
     assert manga_series.number_of_volumes == 21
-    assert (manga_series.cover_image == "https://comicvine.gamespot.com/a/uploads/original/6/67663/4253038-01.jpg")
-    assert (manga_series.url == "https://comicvine.gamespot.com/assassination-classroom/4050-78567/")
+    assert manga_series.cover_image == "https://comicvine.gamespot.com/a/uploads/original/6/67663/4253038-01.jpg"
+    assert manga_series.url == "https://comicvine.gamespot.com/assassination-classroom/4050-78567/"
 
 
 def test_al_get_author(manga_series):
