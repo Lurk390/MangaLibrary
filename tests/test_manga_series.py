@@ -1,7 +1,7 @@
 import pytest
 from dotenv import load_dotenv
 
-from src.MangaLibrary.manga_series import MangaSeries
+from MangaLibrary.manga_series import MangaSeries
 
 from AnilistPython import Anilist
 
