@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from typing import List, Tuple
 
 from MangaLibrary.manga_series import MangaSeries
 
@@ -279,3 +280,26 @@ class DatabaseFunctions:
             (manga_series,),
         )
         return self.cursor.fetchone()[0]
+
+    def get_user_volumes(self, username: str) -> List[Tuple[str, int]]:
+        """Gets all the volumes a user has
+
+        Args:
+            username (str): User's username
+
+        Returns:
+            List[Tuple[str, int]]: List of tuples containing the manga series title and volume number
+        """
+        user_id = self.get_user_id(username)
+
+        self.cursor.execute(
+            """
+            SELECT Title, VolumeNumber
+            FROM MangaInfo
+            JOIN Volumes USING (MangaID)
+            JOIN UserToVolume USING (VolumeID)
+            WHERE UserID = ?
+            """,
+            (user_id,),
+        )
+        return self.cursor.fetchall()
