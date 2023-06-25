@@ -54,9 +54,8 @@ class DatabaseFunctions:
             );
             
             CREATE TABLE UserToVolume (
-                UserToVolumeID INTEGER PRIMARY KEY AUTOINCREMENT,
-                UserID INTEGER NOT NULL,
-                VolumeID INTEGER NOT NULL
+                UserID INTEGER NOT NULL REFERENCES Users(UserID),
+                VolumeID INTEGER NOT NULL REFERENCES Volumes(VolumeID)
             );
             """
         )
@@ -128,4 +127,56 @@ class DatabaseFunctions:
             """,
             (username, first_name, last_name),
         )
+        self.connection.commit()
+
+    def add_volume_to_user(self, username: str, manga_series: str, volume_number: int) -> None:
+        """Adds a volume to a user
+
+        Args:
+            username (str): User's username
+            manga_series (str): Manga series title
+            volume_number (int): Volume number
+        """
+        # Get user id
+        self.cursor.execute(
+            """
+            SELECT UserID
+            FROM Users
+            WHERE Username = ?
+            """,
+            (username,),
+        )
+        user_id = self.cursor.fetchone()[0]
+
+        # Get manga id
+        self.cursor.execute(
+            """
+            SELECT MangaID
+            FROM MangaInfo
+            WHERE Title = ?
+            """,
+            (manga_series,),
+        )
+        manga_id = self.cursor.fetchone()[0]
+
+        # Get volume id
+        self.cursor.execute(
+            """
+            SELECT VolumeID
+            FROM Volumes
+            WHERE MangaID = ? AND VolumeNumber = ?
+            """,
+            (manga_id, volume_number),
+        )
+        volume_id = self.cursor.fetchone()[0]
+
+        # Add volume to user
+        self.cursor.execute(
+            """
+            INSERT INTO UserToVolume (UserID, VolumeID)
+            VALUES (?, ?)
+            """,
+            (user_id, volume_id),
+        )
+
         self.connection.commit()
