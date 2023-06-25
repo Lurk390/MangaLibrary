@@ -17,6 +17,8 @@ def main():
 
     db = DatabaseFunctions()
 
+    db.add_user("Lurk390", "Mahmoud", "Elbasiouny")
+
     for manga in TEST_HARNESS:
         manga_data = MangaSeries(manga)
         db.add_manga(manga_data)

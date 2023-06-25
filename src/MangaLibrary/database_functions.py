@@ -28,6 +28,7 @@ class DatabaseFunctions:
             
             CREATE TABLE Users (
                 UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+                Username TEXT NOT NULL UNIQUE,
                 FirstName TEXT NOT NULL,
                 LastName TEXT NOT NULL
             );
@@ -87,18 +88,19 @@ class DatabaseFunctions:
         )
         self.connection.commit()
 
-    def add_user(self, first_name: str, last_name: str) -> None:
+    def add_user(self, username: str, first_name: str, last_name: str) -> None:
         """Adds a user into the database
 
         Args:
+            username (str): User's username
             first_name (str): User's first name
             last_name (str): User's last name
         """
         self.cursor.execute(
             """
-            INSERT INTO Users (FirstName, LastName)
-            VALUES (?, ?)
+            INSERT INTO Users (Username, FirstName, LastName)
+            VALUES (?, ?, ?)
             """,
-            (first_name, last_name),
+            (username, first_name, last_name),
         )
         self.connection.commit()
