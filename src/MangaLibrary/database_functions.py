@@ -60,6 +60,8 @@ class DatabaseFunctions:
             """
         )
 
+        self.connection.commit()
+
     def populate_volumes(self, manga_series: str) -> None:
         """Populates the Volumes table with all volumes from the MangaInfo table"""
 
@@ -82,6 +84,8 @@ class DatabaseFunctions:
                 """,
                 (manga_id, volume_number),
             )
+
+        self.connection.commit()
 
     def add_manga(self, manga_series: MangaSeries) -> None:
         """Adds the data from a MangaSeries object into the database
@@ -127,6 +131,42 @@ class DatabaseFunctions:
             """,
             (username, first_name, last_name),
         )
+
+        self.connection.commit()
+
+    def delete_user(self, username: str) -> None:
+        """Deletes a user from the database
+
+        Args:
+            username (str): User's username
+        """
+        self.delete_all_user_volumes(username)
+        self.cursor.execute(
+            """
+            DELETE FROM Users
+            WHERE Username = ?
+            """,
+            (username,),
+        )
+
+        self.connection.commit()
+
+    def delete_all_user_volumes(self, username: str) -> None:
+        """Deletes all volumes from a user
+
+        Args:
+            username (str): User's username
+        """
+        user_id = self.get_userid_from_username(username)
+
+        self.cursor.execute(
+            """
+            DELETE FROM UserToVolume
+            WHERE UserID = ?
+            """,
+            (user_id,),
+        )
+
         self.connection.commit()
 
     def add_volume_to_user(self, username: str, manga_series: str, volume_number: int) -> None:
@@ -137,16 +177,7 @@ class DatabaseFunctions:
             manga_series (str): Manga series title
             volume_number (int): Volume number
         """
-        # Get user id
-        self.cursor.execute(
-            """
-            SELECT UserID
-            FROM Users
-            WHERE Username = ?
-            """,
-            (username,),
-        )
-        user_id = self.cursor.fetchone()[0]
+        user_id = self.get_userid_from_username(username)
 
         # Get manga id
         self.cursor.execute(
@@ -180,3 +211,22 @@ class DatabaseFunctions:
         )
 
         self.connection.commit()
+
+    def get_userid_from_username(self, username: str) -> int:
+        """Gets the user id from a username
+
+        Args:
+            username (str): User's username
+
+        Returns:
+            int: User's id
+        """
+        self.cursor.execute(
+            """
+            SELECT UserID
+            FROM Users
+            WHERE Username = ?
+            """,
+            (username,),
+        )
+        return self.cursor.fetchone()[0]
