@@ -10,6 +10,7 @@ from fuzzywuzzy import fuzz, process
 
 class MangaSeries:
     """Class that stores data about a manga series using the AniList and Comic Vine APIs."""
+
     title = ""
     author = ""
     year = 0
@@ -28,9 +29,8 @@ class MangaSeries:
         """Gets manga data from AniList, parses it, and stores in the dictionary.
 
         Args:
-            manga_name (str): Name of a manga series
+            manga_name (str): Name of a manga series.
         """
-
         # Handle special cases ("Berserk Deluxe Edition")
         if fuzz.partial_ratio(manga_name, "Berserk") > 85:
             manga_name = "Berserk"
@@ -46,20 +46,22 @@ class MangaSeries:
         self.status = manga_data["release_status"]
 
     def get_cv_data(self, manga_name: str) -> None:
-        """Gets manga data from Comic Vine and parses it. Uses the publisher from AniList
-        (which is English) to get the best match from Comic Vine.
+        """Gets manga data from Comic Vine and parses it. Uses the publisher from AniList (which is English) to get
+        the best match from Comic Vine.
 
         Args:
-            manga_name (str): Name of a manga series
+            manga_name (str): Name of a manga series.
         """
         load_dotenv()
         API_KEY = os.getenv("CV_API_KEY")
 
-        search_url = f"https://comicvine.gamespot.com/api/search/?api_key={API_KEY}" \
-                     f"&format=json&query={manga_name}&resources=volume"
+        search_url = (
+            f"https://comicvine.gamespot.com/api/search/?api_key={API_KEY}"
+            f"&format=json&query={manga_name}&resources=volume"
+        )
         HEADERS = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-                          "(KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+            "(KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
         }
         response = requests.get(search_url, headers=HEADERS)
 
@@ -112,15 +114,14 @@ class MangaSeries:
 
     @staticmethod
     def al_get_author(manga_name: str) -> str:
-        """Gets the author of a manga series using a AniList API v2 GraphQL query
+        """Gets the author of a manga series using a AniList API v2 GraphQL query.
 
         Args:
-            manga_name (str): Name of a manga series
+            manga_name (str): Name of a manga series.
 
         Returns:
-            str: Author of a manga series
+            str: Author of a manga series.
         """
-
         URL = "https://graphql.anilist.co"
 
         query = """
@@ -158,15 +159,14 @@ class MangaSeries:
 
     @staticmethod
     def parse_publisher(description: str) -> str:
-        """Parses the publisher from the description of the manga series
+        """Parses the publisher from the description of the manga series.
 
         Args:
-            description (str): Description of the manga series
+            description (str): Description of the manga series.
 
         Returns:
-            str: Publisher of the manga series
+            str: Publisher of the manga series.
         """
-
         # Matches "(Source: <publisher>)"
         match = re.search(r"\(Source:\s*(.*?)\)", description)
 
@@ -179,15 +179,14 @@ class MangaSeries:
 
     @staticmethod
     def clean_description(description: str) -> str:
-        """Removes HTML elements and unnecessary information from the raw description
+        """Removes HTML elements and unnecessary information from the raw description.
 
         Args:
-            description (str): Description of a manga series
+            description (str): Description of a manga series.
 
         Returns:
-            str: Cleaned description of a manga series
+            str: Cleaned description of a manga series.
         """
-
         # Remove HTML tags
         description = re.sub(r"<.*?>", "", description)
 

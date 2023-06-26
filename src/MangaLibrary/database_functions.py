@@ -6,7 +6,7 @@ from MangaLibrary.manga_series import MangaSeries
 
 
 class DatabaseFunctions:
-    """Class that handles all database functions"""
+    """Class that handles all database functions."""
 
     def __init__(self):
         if not os.path.exists("data"):
@@ -18,7 +18,7 @@ class DatabaseFunctions:
         self.init_tables()
 
     def init_tables(self) -> None:
-        """Creates all tables if they don't exist"""
+        """Creates all tables if they don't exist."""
         self.cursor.executescript(
             """
             DROP TABLE IF EXISTS Users;
@@ -63,10 +63,10 @@ class DatabaseFunctions:
         self.connection.commit()
 
     def add_manga(self, manga_series: MangaSeries) -> None:
-        """Adds the data from a MangaSeries object into the database
+        """Adds the data from a MangaSeries object into the database.
 
         Args:
-            manga_series (MangaSeries): A MangaSeries object
+            manga_series (MangaSeries): A MangaSeries object.
         """
         self.cursor.execute(
             """
@@ -110,10 +110,10 @@ class DatabaseFunctions:
         self.connection.commit()
 
     def delete_manga(self, manga_series: str) -> None:
-        """Deletes a manga series from the database
+        """Deletes a manga series from the database.
 
         Args:
-            manga_series (str): Manga series title
+            manga_series (str): Manga series title.
         """
         manga_id = self.get_manga_id(manga_series)
 
@@ -150,12 +150,12 @@ class DatabaseFunctions:
         self.connection.commit()
 
     def add_user(self, username: str, first_name: str, last_name: str) -> None:
-        """Adds a user into the database
+        """Adds a user into the database.
 
         Args:
-            username (str): User's username
-            first_name (str): User's first name
-            last_name (str): User's last name
+            username (str): User's username.
+            first_name (str): User's first name.
+            last_name (str): User's last name.
         """
         self.cursor.execute(
             """
@@ -168,10 +168,10 @@ class DatabaseFunctions:
         self.connection.commit()
 
     def delete_user(self, username: str) -> None:
-        """Deletes a user from the database
+        """Deletes a user from the database.
 
         Args:
-            username (str): User's username
+            username (str): User's username.
         """
         user_id = self.get_user_id(username)
 
@@ -196,12 +196,12 @@ class DatabaseFunctions:
         self.connection.commit()
 
     def add_volume_to_user(self, username: str, manga_series: str, volume_number: int) -> None:
-        """Adds a volume to a user
+        """Adds a volume to a user.
 
         Args:
-            username (str): User's username
-            manga_series (str): Manga series title
-            volume_number (int): Volume number
+            username (str): User's username.
+            manga_series (str): Manga series title.
+            volume_number (int): Volume number.
         """
         user_id = self.get_user_id(username)
         manga_id = self.get_manga_id(manga_series)
@@ -229,12 +229,12 @@ class DatabaseFunctions:
         self.connection.commit()
 
     def delete_volume_from_user(self, username: str, manga_series: str, volume_number: int) -> None:
-        """Deletes a volume from a user
+        """Deletes a volume from a user.
 
         Args:
-            username (str): User's username
-            manga_series (str): Manga series title
-            volume_number (int): Volume number
+            username (str): User's username.
+            manga_series (str): Manga series title.
+            volume_number (int): Volume number.
         """
         user_id = self.get_user_id(username)
         manga_id = self.get_manga_id(manga_series)
@@ -262,13 +262,13 @@ class DatabaseFunctions:
         self.connection.commit()
 
     def get_user_id(self, username: str) -> int:
-        """Gets the user id from a username
+        """Gets the user id from a username.
 
         Args:
-            username (str): User's username
+            username (str): User's username.
 
         Returns:
-            int: User's id
+            int: User's id.
         """
         self.cursor.execute(
             """
@@ -281,13 +281,13 @@ class DatabaseFunctions:
         return self.cursor.fetchone()[0]
 
     def get_manga_id(self, manga_series: str) -> int:
-        """Gets the manga id from a manga series title
+        """Gets the manga id from a manga series title.
 
         Args:
-            manga_series (str): Manga series title
+            manga_series (str): Manga series title.
 
         Returns:
-            int: Manga id
+            int: Manga id.
         """
         self.cursor.execute(
             """
@@ -300,13 +300,13 @@ class DatabaseFunctions:
         return self.cursor.fetchone()[0]
 
     def get_user_volumes(self, username: str) -> List[Tuple[str, int]]:
-        """Gets all the volumes a user has
+        """Gets all the volumes a user has.
 
         Args:
-            username (str): User's username
+            username (str): User's username.
 
         Returns:
-            List[Tuple[str, int]]: List of tuples containing the manga series title and volume number
+            List[Tuple[str, int]]: List of tuples containing the manga series title and volume number.
         """
         user_id = self.get_user_id(username)
 
