@@ -11,11 +11,23 @@ CV_API_KEY=
 ```
 
 ## Installing Poetry and Requirements
-1. `pip install poetry`
-2. `poetry install`
+1. Make sure poetry is installed:
+    ```shell
+    pip install poetry
+    ```
+
+2. Install the requirements:
+    ```shell
+    poetry install
+    ```
 
 ## Running the Program
-`poetry run MangaLibrary`
+```shell
+poetry run MangaLibrary
+```
 
 ## Testing with pytest
-`poetry run pytest --cov` (add `--cov-report=html:coverage_re` flag if you want an HTML report)
+```shell
+poetry run pytest
+```
+add `--cov` to see coverage or `--cov --cov-report html:cov_html` for a full HTML report
