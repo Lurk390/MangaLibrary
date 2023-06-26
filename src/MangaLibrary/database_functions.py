@@ -19,7 +19,6 @@ class DatabaseFunctions:
 
     def init_tables(self) -> None:
         """Creates all tables if they don't exist"""
-
         self.cursor.executescript(
             """
             DROP TABLE IF EXISTS Users;
@@ -63,38 +62,12 @@ class DatabaseFunctions:
 
         self.connection.commit()
 
-    def populate_volumes(self, manga_series: str) -> None:
-        """Populates the Volumes table with all volumes from the MangaInfo table"""
-
-        self.cursor.execute(
-            """
-            SELECT MangaID, NumberOfVolumes
-            FROM MangaInfo
-            WHERE Title = ?
-            """,
-            (manga_series,),
-        )
-
-        manga_id, number_of_volumes = self.cursor.fetchone()
-
-        for volume_number in range(1, number_of_volumes + 1):
-            self.cursor.execute(
-                """
-                INSERT INTO Volumes (MangaID, VolumeNumber)
-                VALUES (?, ?)
-                """,
-                (manga_id, volume_number),
-            )
-
-        self.connection.commit()
-
     def add_manga(self, manga_series: MangaSeries) -> None:
         """Adds the data from a MangaSeries object into the database
 
         Args:
             manga_series (MangaSeries): A MangaSeries object
         """
-
         self.cursor.execute(
             """
             INSERT INTO MangaInfo (Title, Author, Year, Publisher, NumberOfVolumes, Description, Status, CoverImage, 
@@ -114,7 +87,26 @@ class DatabaseFunctions:
             ),
         )
 
-        self.populate_volumes(manga_series.title)
+        # Populate the Volumes table with the manga series' volumes
+        self.cursor.execute(
+            """
+            SELECT MangaID, NumberOfVolumes
+            FROM MangaInfo
+            WHERE Title = ?
+            """,
+            (manga_series.title,),
+        )
+        manga_id, number_of_volumes = self.cursor.fetchone()
+
+        for volume_number in range(1, number_of_volumes + 1):
+            self.cursor.execute(
+                """
+                INSERT INTO Volumes (MangaID, VolumeNumber)
+                VALUES (?, ?)
+                """,
+                (manga_id, volume_number),
+            )
+
         self.connection.commit()
 
     def delete_manga(self, manga_series: str) -> None:
@@ -181,31 +173,24 @@ class DatabaseFunctions:
         Args:
             username (str): User's username
         """
-        self.delete_all_user_volumes(username)
-        self.cursor.execute(
-            """
-            DELETE FROM Users
-            WHERE Username = ?
-            """,
-            (username,),
-        )
-
-        self.connection.commit()
-
-    def delete_all_user_volumes(self, username: str) -> None:
-        """Deletes all volumes from a user
-
-        Args:
-            username (str): User's username
-        """
         user_id = self.get_user_id(username)
 
+        # Delete all the user's volumes in UserToVolume first
         self.cursor.execute(
             """
             DELETE FROM UserToVolume
             WHERE UserID = ?
             """,
             (user_id,),
+        )
+
+        # Delete the user
+        self.cursor.execute(
+            """
+            DELETE FROM Users
+            WHERE Username = ?
+            """,
+            (username,),
         )
 
         self.connection.commit()
@@ -237,6 +222,39 @@ class DatabaseFunctions:
             """
             INSERT INTO UserToVolume (UserID, VolumeID)
             VALUES (?, ?)
+            """,
+            (user_id, volume_id),
+        )
+
+        self.connection.commit()
+
+    def delete_volume_from_user(self, username: str, manga_series: str, volume_number: int) -> None:
+        """Deletes a volume from a user
+
+        Args:
+            username (str): User's username
+            manga_series (str): Manga series title
+            volume_number (int): Volume number
+        """
+        user_id = self.get_user_id(username)
+        manga_id = self.get_manga_id(manga_series)
+
+        # Get volume id
+        self.cursor.execute(
+            """
+            SELECT VolumeID
+            FROM Volumes
+            WHERE MangaID = ? AND VolumeNumber = ?
+            """,
+            (manga_id, volume_number),
+        )
+        volume_id = self.cursor.fetchone()[0]
+
+        # Delete volume from user
+        self.cursor.execute(
+            """
+            DELETE FROM UserToVolume
+            WHERE UserID = ? AND VolumeID = ?
             """,
             (user_id, volume_id),
         )
