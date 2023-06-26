@@ -11,16 +11,8 @@ def db():
 
 class TestDatabaseFunctions:
     def test_init_tables(self, db):
-        db.cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        assert db.cursor.fetchall() == [
-            ("sqlite_sequence",),
-            ("Users",),
-            ("MangaInfo",),
-            ("Volumes",),
-            ("UserToVolume",),
-        ]
-
-        db.connection.close()
+        db.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name!='sqlite_sequence'")
+        assert [('Users',), ('MangaInfo',), ('Volumes',), ('UserToVolume',)] == db.cursor.fetchall()
 
     def test_add_and_delete_manga(self, db):
         # Test adding manga
@@ -62,8 +54,6 @@ class TestDatabaseFunctions:
         db.cursor.execute("SELECT * FROM Volumes")
         assert db.cursor.fetchall() == []
 
-        db.connection.close()
-
     def test_add_and_delete_user(self, db):
         # Test adding user
         db.add_user("JohnDoe123", "John", "Doe")
@@ -74,8 +64,6 @@ class TestDatabaseFunctions:
         db.delete_user("JohnDoe123")
         db.cursor.execute("SELECT * FROM Users")
         assert db.cursor.fetchall() == []
-
-        db.connection.close()
 
     def test_add_volume_to_user(self, db):
         # Test adding volume to user
@@ -90,8 +78,6 @@ class TestDatabaseFunctions:
         db.delete_volume_from_user("JohnDoe123", "Assassination Classroom", 1)
         db.cursor.execute("SELECT * FROM UserToVolume")
         assert db.cursor.fetchall() == [(1, 2)]
-
-        db.connection.close()
 
     def test_get_user_id(self, db):
         db.add_user("JohnDoe123", "John", "Doe")
