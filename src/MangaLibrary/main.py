@@ -10,8 +10,10 @@ def main():
         "Chainsaw Man",
         "Dorohedoro",
         "Fire Punch",
-        "Spy x Family",
         "The Promised Neverland",
+        "Spy x Family",
+        # "Tatsuki Fujimoto Before Chainsaw Man: 17-21",
+        # "Tatsuki Fujimoto Before Chainsaw Man: 22-26",
         "Uzumaki",
         "Vinland Saga",
     ]
@@ -31,8 +33,10 @@ def main():
         "Assassination Classroom": list(range(1, 13)),
         "Dorohedoro": [1, 2],
         "Fire Punch": [1, 3, 5],
-        "Spy x Family": list(range(1, 10)),
         "The Promised Neverland": list(range(1, 21)),
+        "Spy x Family": list(range(1, 10)),
+        # "Tatsuki Fujimoto Before Chainsaw Man: 17-21": [1],
+        # "Tatsuki Fujimoto Before Chainsaw Man: 22-26": [1],
     }
 
     for manga, volumes_list in volumes.items():
