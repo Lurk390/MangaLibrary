@@ -49,7 +49,7 @@ class DatabaseFunctions:
             
             CREATE TABLE Volumes (
                 VolumeID INTEGER PRIMARY KEY AUTOINCREMENT,
-                MangaID INTEGER NOT NULL,
+                MangaID INTEGER NOT NULL REFERENCES MangaInfo(MangaID),
                 VolumeNumber INTEGER NOT NULL
             );
             
